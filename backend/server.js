@@ -5,6 +5,7 @@ import path from 'path';
 // ** and set the "type" property to "module" in package.json
 import connectDB from './config/db.js';
 import productRoutes from './routes/productRoute.js';
+import { errorHandler, notFoundFallback } from './middleware/errorHandler.js';
 
 dotenv.config({ path: path.resolve(`${process.cwd()}/config/.env`) });
 
@@ -12,17 +13,17 @@ connectDB();
 
 const app = express();
 
-app.get('/', (req, res) => {
-    res.send('API running...');
-});
-
 app.use('/api/products', productRoutes);
 
-const PORT = process.env.PORT || 5000;
+app.use(notFoundFallback);
+app.use(errorHandler);
+
+const port = process.env.PORT || 5000;
+
 app.listen(
-    PORT,
+    port,
     console.log(
-        `Server listening on port ${PORT} in ${process.env.NODE_ENV}`.yellow
+        `Server listening on port ${port} in ${process.env.NODE_ENV}`.yellow
             .bold
     )
 );
